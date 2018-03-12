@@ -1,0 +1,34 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:router="http://www.mulesoft.org/schema/mule/router"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+      http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+          http://www.mulesoft.org/schema/mule/router http://www.mulesoft.org/schema/mule/router/current/mule-router.xsd">
+
+    <http:listener-config name="listenerConfig">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
+    <flow name="sayHiFlow">
+        <http:listener path="route" config-ref="listenerConfig"/>
+
+        <router:route routingKey="routeId" target="routing"/>
+        <logger message="-------- ROUTED RESPONSE------" level="ERROR" />
+        <logger message="#[vars.routing]" level="ERROR" />
+        <logger message="-------- ORIGINAL PAYLOAD------" level="ERROR" />
+        <logger message="#[payload]" level="ERROR" />
+
+    </flow>
+
+    <flow name="retrieveInfoFlow">
+        <router:listener routingKey="routeId" />
+
+        <!--just to verify stream still open-->
+        <logger message="#[payload]" level="ERROR" />
+        <file:read path="/Users/marianogonzalez/Desktop/us_500.csv" />
+    </flow>
+
+</mule>
