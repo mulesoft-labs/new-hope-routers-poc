@@ -15,9 +15,9 @@ import org.mule.runtime.core.api.functional.Either;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.execution.OnError;
 import org.mule.runtime.extension.api.annotation.execution.OnSuccess;
-import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.source.EmitsResponse;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.source.Source;
@@ -68,10 +68,11 @@ public class RoutingSource extends Source<InputStream, Void> {
   }
 
   @OnSuccess
-  public void onSuccess(@Content InputStream response, SourceCallbackContext callbackContext, SourceCompletionCallback completionCallback) {
+  public void onSuccess(@ParameterGroup(name = "Response", showInDsl = true) ResponseBuilder response, SourceCallbackContext callbackContext,
+                        SourceCompletionCallback completionCallback) {
     DefaultRoutingContext routingContext = getRoutingContext(callbackContext);
     routingContext.setSourceCompletionCallback(completionCallback);
-    routingContext.future.complete(Result.<InputStream, Void>builder().output(response).build());
+    routingContext.future.complete(Result.<InputStream, Void>builder().output(response.getContent()).build());
   }
 
   /**

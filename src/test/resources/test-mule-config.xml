@@ -20,11 +20,14 @@
         <logger message="#[vars.routing]" level="ERROR" />
         <logger message="-------- ORIGINAL PAYLOAD------" level="ERROR" />
         <logger message="#[payload]" level="ERROR" />
-
     </flow>
 
     <flow name="retrieveInfoFlow">
-        <router:listener routingKey="routeId" />
+        <router:listener routingKey="routeId">
+            <router:response>
+                <router:content>#[output application/json --- payload]</router:content>
+            </router:response>
+        </router:listener>
 
         <!--just to verify stream still open-->
         <logger message="#[payload]" level="ERROR" />
